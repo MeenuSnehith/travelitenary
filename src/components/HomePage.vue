@@ -6,16 +6,14 @@
       align-tabs="start"
     >
       <v-tab :value="1">All Trips</v-tab>
-      <v-tab :value="2">Add Trip</v-tab>
+      <v-tab :value="2" v-show="this.$store.state.permission == 'Admin'">Add Trip</v-tab>
     </v-tabs>
     <v-window v-model="tab">
       <v-window-item
         :key="1"
         :value="1"
       >
-        <p>
-          test
-        </p>
+        <AllTrips/>
       </v-window-item>
       <v-window-item
         :key="2"
@@ -29,9 +27,10 @@
 
 <script>
 import AddTrip from './AddTrip.vue'
+import AllTrips from './AllTrips.vue'
 
   export default {
-    components: { AddTrip },
+    components: { AddTrip,  AllTrips},
     data: () => ({
       tab: null,
     }),

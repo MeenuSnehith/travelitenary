@@ -167,7 +167,7 @@
 </template>
 
 <script>
-import AuthenticationService from '@/services/UserAuthenticationService'
+import TripsService from '@/services/TripsService'
 
   export default {
     data: () => ({
@@ -201,7 +201,7 @@ import AuthenticationService from '@/services/UserAuthenticationService'
       },
       async registerClick(){
         try{
-          await AuthenticationService.register({
+          await TripsService.addTrip({
               tripTitle: this.title,
               location: this.location,
               days: this.days,
