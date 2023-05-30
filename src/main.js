@@ -12,7 +12,9 @@ const store = createStore({
     return {
       username: "",
       permission: "",
-      isUserLoggedIn: false
+      isUserLoggedIn: false,
+      viewTripId: "",
+      editTripId: "1"
     }
   },
   mutations: {
@@ -24,6 +26,12 @@ const store = createStore({
     },
     setIsUserLoggedIn (state, isUserLoggedIn){
       state.isUserLoggedIn = isUserLoggedIn
+    },
+    setviewTripId (state, id){
+      state.viewTripId = id
+    },
+    seteditTripId (state, id){
+      state.editTripId = id
     }
   }
 })

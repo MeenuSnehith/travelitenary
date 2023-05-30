@@ -1,5 +1,5 @@
 <template>
-  <v-sheet class="pa-12" rounded>
+  <v-sheet>
     <v-card class="mx-auto px-6 py-8" max-width="100%">
       <v-form
         v-model="form"
@@ -116,6 +116,29 @@
             </v-col>
 
           </v-row>
+
+          <v-row>
+            <v-col cols="12">
+              <v-card>
+                <v-img
+                  :src= "URL"
+                  max-height="350"
+                  class="bg-grey-lighten-2"
+                ></v-img>
+                <v-card-title class="text-h6">
+                  <v-text-field
+                    v-model="URL"
+                    :readonly="loading"
+                    class="mb-2"
+                    clearable
+                    label="Thumbnail URL"
+                  ></v-text-field>
+                </v-card-title>
+              </v-card>
+            </v-col>
+
+          </v-row>
+
           <v-row>
             <v-col
               cols="12"
@@ -135,7 +158,7 @@
               type="submit"
               variant="elevated"
               rounded="xl"
-              @click="registerClick"
+              @click="addNewTrip"
             >
               Add
             </v-btn>
@@ -168,6 +191,7 @@
 
 <script>
 import TripsService from '@/services/TripsService'
+import router from '../router'
 
   export default {
     data: () => ({
@@ -181,7 +205,7 @@ import TripsService from '@/services/TripsService'
       nights: null,
       days: null,
       location: null,
-
+      URL: "",
       loading: false,
 
       snackbar: false,
@@ -199,7 +223,7 @@ import TripsService from '@/services/TripsService'
       required (v) {
         return !!v || 'Field is required'
       },
-      async registerClick(){
+      async addNewTrip(){
         try{
           await TripsService.addTrip({
               tripTitle: this.title,
@@ -210,11 +234,14 @@ import TripsService from '@/services/TripsService'
               fromdate: this.from,
               todate: this.to,
               description: this.decription,
+              thumbnailURL: this.URL
           }).then((response)=> {
                 console.log(response)
                 if(response.statusText == "OK"){
+                  this.$store.commit('seteditTripId', response.data.id)
                   this.clearFields()
                   this.snackbar = true
+                  setTimeout(() => (router.push('/updatetrip')), 1000)
                 }
               }
           )

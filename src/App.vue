@@ -2,6 +2,7 @@
   <v-app>
     <v-main>
       <NavBar :key="this.$store.state.isUserLoggedIn"/>
+      <br/>
       <router-view/>
     </v-main>
   </v-app>

@@ -1,5 +1,5 @@
 <template>
-  <v-sheet class="pa-12" rounded>
+  <v-sheet>
     <h1 class="text-center">Login</h1>
     <br/>
     <v-card class="mx-auto px-6 py-8" max-width="344">

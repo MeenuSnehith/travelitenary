@@ -6,5 +6,14 @@ export default{
     },
     getAllTrips () {
         return Api().get('/gettrips')
+    },
+    getTrip (trip) {
+        return Api().post('/gettrip', trip)
+    },
+    UpdateTrip (trip) {
+        return Api().post('/updatetrip', trip)
+    },
+    getAllJoinedTrips (trip) {
+        return Api().post('/getjoinedtripdetails', trip)
     }
 }

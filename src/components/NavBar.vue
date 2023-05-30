@@ -8,6 +8,14 @@
        
         <v-app-bar-title>Welcom to Tour Advisor</v-app-bar-title>
 
+        <template v-slot:prepend>
+          <v-btn
+            color="white"
+            icon="mdi-home"
+            variant="text"
+            to="/"
+          ></v-btn>
+        </template>
         <template v-slot:append>
           <div class="text-center" v-show="!isUserLoggedIn">
             <v-btn
