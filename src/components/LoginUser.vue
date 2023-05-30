@@ -1,5 +1,5 @@
 <template>
-  <v-sheet class="pa-12" rounded>
+  <v-sheet>
     <h1 class="text-center">Login</h1>
     <br/>
     <v-card class="mx-auto px-6 py-8" max-width="344">
@@ -8,12 +8,12 @@
         @submit.prevent="onSubmit"
       >
         <v-text-field
-          v-model="email"
+          v-model="username"
           :readonly="loading"
           :rules="[required]"
           class="mb-2"
           clearable
-          label="Email"
+          label="Username"
         ></v-text-field>
 
         <v-text-field
@@ -28,8 +28,20 @@
           @click:append="show1 = !show1"
         ></v-text-field>
         
-
         <br>
+        
+        <v-alert
+          variant="outlined"
+          type="warning"
+          prominent
+          border="top"
+          value="passwordAlert"
+          v-show="showAlert"
+        >
+          {{alertMessage}}
+        </v-alert>
+        
+        <br/>
 
         <v-btn
           :disabled="!form"
@@ -71,11 +83,12 @@
 
 <script>
 import router from '../router'
+import AuthenticationService from '@/services/UserAuthenticationService'
 
   export default {
     data: () => ({
       form: false,
-      email: null,
+      username: null,
       password: null,
       passwordConfirm: null,
       loading: false,
@@ -85,6 +98,8 @@ import router from '../router'
       show2: true,
       show3: false,
       show4: false,
+      showAlert: false,
+      alertMessage: "",
     }),
 
     methods: {
@@ -98,11 +113,41 @@ import router from '../router'
       required (v) {
         return !!v || 'Field is required'
       },
-      loginClick(){
-        this.snackbar = true;
-        setTimeout(() => (router.push('/')), 2000)
-        
-      }
+      async loginClick(){
+        try{
+          await AuthenticationService.login({
+              username: this.username,
+              password: this.password
+          }).then((response)=> {
+                console.log(response.statusText)
+                if(response.statusText == "OK"){
+                  this.$store.commit('setUserName', response.data.username)
+                  this.$store.commit('setPermission', response.data.permission)
+                  this.$store.commit('setIsUserLoggedIn', true)
+                  console.log(this.$store.state.username)
+                  console.log(this.$store.state.permission)
+                  console.log(this.$store.state.isUserLoggedIn)
+                  this.clearFields()
+                  this.snackbar = true
+                  setTimeout(() => (router.push('/')), 2000)
+                }
+              }
+          )
+        }
+        catch(err){
+          console.log(err)
+          this.showError(err.response.data.error)
+          this.clearFields()
+        }
+      },
+      showError(errorText){
+        this.alertMessage = errorText;
+        this.showAlert = true;
+      },
+      clearFields(){
+        this.password = ""
+        this.username = ""
+      },
     }
   }
 
