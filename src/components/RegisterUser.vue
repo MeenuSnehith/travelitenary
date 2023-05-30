@@ -1,5 +1,5 @@
 <template>
-  <v-sheet class="pa-12" rounded>
+  <v-sheet>
     <h1 class="text-center">Register</h1>
     <br/>
     <v-card class="mx-auto px-6 py-8" max-width="344">
@@ -8,12 +8,12 @@
         @submit.prevent="onSubmit"
       >
         <v-text-field
-          v-model="email"
+          v-model="username"
           :readonly="loading"
           :rules="[required]"
           class="mb-2"
           clearable
-          label="Email"
+          label="Username"
         ></v-text-field>
 
         <v-text-field
@@ -62,6 +62,7 @@
           Register
         </v-btn>
         <br/>
+
         <v-btn
           block
           color="primary"
@@ -88,11 +89,12 @@
 
 <script>
 import router from '../router'
+import AuthenticationService from '@/services/UserAuthenticationService'
 
   export default {
     data: () => ({
       form: false,
-      email: null,
+      username: null,
       password: null,
       passwordConfirm: null,
       loading: false,
@@ -113,18 +115,48 @@ import router from '../router'
       required (v) {
         return !!v || 'Field is required'
       },
-      registerClick(){
-        this.snackbar = true;
-        setTimeout(() => (router.push('/')), 2000)
-        
+      async registerClick(){
+        try{
+          await AuthenticationService.register({
+              username: this.username,
+              password: this.password,
+              permission: "user"
+          }).then((response)=> {
+                console.log(response)
+                if(response.statusText == "OK"){
+                  this.$store.commit('setUserName', response.data.username)
+                  this.$store.commit('setPermission', response.data.permission)
+                  this.$store.commit('setIsUserLoggedIn', true)
+                  console.log(this.$store.state.username)
+                  console.log(this.$store.state.permission)
+                  console.log(this.$store.state.isUserLoggedIn)
+                  this.clearFields()
+                  this.snackbar = true
+                  setTimeout(() => (router.push('/')), 2000)
+                }
+              }
+          )
+        }
+        catch(err){
+          console.log(err)
+          console.log(err.response.data.error)
+          this.showError(err.response.data.error)
+        }
       },
+      clearFields(){
+        this.password = ""
+        this.username = ""
+        this.passwordConfirm = ""
+      },
+      showError(errorText){
+        this.alertMessage = errorText;
+        this.showAlert = true;
+      }
     },
     watch: {
     password: function () {
       if(this.password != this.passwordConfirm){
-        this.alertMessage = "Password and Confirm Password must be same";
-        this.showAlert = true;
-        console.log(this.password);
+        this.showError("Password and Confirm Password must be same")
       }
       else{
         this.showAlert = false;
@@ -132,9 +164,7 @@ import router from '../router'
     },
     passwordConfirm: function () {
       if(this.password != this.passwordConfirm){
-        this.alertMessage = "Password and Confirm Password must be same";
-        this.showAlert = true;
-        console.log(this.password);
+        this.showError("Password and Confirm Password must be same")
       }
       else{
         this.showAlert = false;

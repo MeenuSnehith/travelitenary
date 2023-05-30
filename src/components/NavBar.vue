@@ -8,12 +8,19 @@
        
         <v-app-bar-title>Welcom to Tour Advisor</v-app-bar-title>
 
+        <template v-slot:prepend>
+          <v-btn
+            color="white"
+            icon="mdi-home"
+            variant="text"
+            to="/"
+          ></v-btn>
+        </template>
         <template v-slot:append>
-          <div class="text-center">
+          <div class="text-center" v-show="!isUserLoggedIn">
             <v-btn
               prepend-icon="mdi-account-circle"
               to="/login"
-              v-if="showLoginBtn"
             >
               <template v-slot:prepend>
                 <v-icon color="warning"></v-icon>
@@ -23,22 +30,31 @@
             <v-btn
               prepend-icon="mdi-account-circle"
               to="/register"
-              v-if="showLoginBtn"
             >
               <template v-slot:prepend>
                 <v-icon color="warning"></v-icon>
               </template>
               Register
             </v-btn>
+          </div>
 
+          <div class="text-center" v-show="isUserLoggedIn">
             <v-btn
               prepend-icon="mdi-account-circle"
-              v-if="!showLoginBtn"
             >
               <template v-slot:prepend>
                 <v-icon color="warning"></v-icon>
               </template>
               {{UserName}}
+            </v-btn>
+            <v-btn
+              prepend-icon="mdi-account-circle"
+              @click="logout"
+            >
+              <template v-slot:prepend>
+                <v-icon color="warning"></v-icon>
+              </template>
+              Log out
             </v-btn>
           </div>
         </template>
@@ -48,13 +64,36 @@
 </template>
 
 <script>
+import { useStore } from 'vuex'
 
 export default {
   name: 'NavBar',
 
   data: () => ({
     showLoginBtn: true,
-    UserName: "Karthik"
+    UserName: "",
+    isUserLoggedIn: false
   }),
+
+  methods: {
+      onLoad(){
+        const store = useStore()
+        console.log(store.state.isUserLoggedIn)
+        console.log(store.state.username)
+        this.isUserLoggedIn = store.state.isUserLoggedIn
+        this.UserName = store.state.username
+      },
+      logout(){
+        this.UserName = ""
+        this.isUserLoggedIn = false
+        this.$store.commit('setUserName', "")
+        this.$store.commit('setPermission', "")
+        this.$store.commit('setIsUserLoggedIn', false)
+      }
+  },
+  beforeMount() {
+    this.onLoad()
+  },
+
 }
 </script>
