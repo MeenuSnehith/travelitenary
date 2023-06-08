@@ -133,9 +133,30 @@
             >
               <v-alert
                 :value="true"
+                width="500"
               >
-              <h4>Day:&nbsp;{{item.day}}</h4>
-                <p>{{item.location}}</p>
+                <v-row>
+                  <v-col cols="2">
+                    <h4>Day:&nbsp;{{item.day}}</h4>
+                  </v-col>
+                  <v-col cols="6">
+                    <h4>{{item.activity}}</h4>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="2"></v-col>
+                  <v-col cols="6">
+                    <h4>Location:</h4><p>{{item.location}}</p>
+                    <img :src="item.locationIMG" width="150" height="100">
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="2"></v-col>
+                  <v-col cols="6">
+                    <h4>Hotel:</h4><p>{{item.hotelName}}</p>
+                    <img :src="item.hotelIMG" width="150" height="100">
+                  </v-col>
+                </v-row>
               </v-alert>
             </v-timeline-item>
           </v-timeline>
@@ -150,8 +171,19 @@
     >
       
     </v-snackbar>
-
+    <v-overlay
+      :model-value="loadingOverlay"
+      class="align-center justify-center"
+      :persistent="diableOverlay"
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
   </v-sheet>
+  
 </template>
 
 <script>
@@ -163,6 +195,10 @@ import router from '../router'
 
   export default {
     data: () => ({
+      loadingOverlay: false,
+      diableOverlay:true,
+      getTripDetailsCount: 0,
+
       thumbnailURL: "",
       title: "",
       cost: null,
@@ -196,6 +232,8 @@ import router from '../router'
           this.from = this.trips.fromdate
           this.to = this.trips.todate
           this.thumbnailURL = this.trips.thumbnailURL
+
+          this.getTripDetailsCount = this.getTripDetailsCount + 1
         })
         console.log(this.trips)
       },
@@ -213,9 +251,14 @@ import router from '../router'
               console.log(element)
               this.itenarys.push({
                 day: element.day,
-                location: element.location
+                activity: element.activity,
+                location: element.location,
+                locationIMG: element.locationIMG,
+                hotelName: element.hotelName,
+                hotelIMG: element.hotelIMG
               })
             });
+          this.getTripDetailsCount = this.getTripDetailsCount + 1
         })
       },
       async GetTripImagesDetails(){
@@ -227,10 +270,12 @@ import router from '../router'
               console.log(element)
               this.tripimgs.push(element.ImageURL)
             });
+          this.getTripDetailsCount = this.getTripDetailsCount + 1
         })
       },
       editTrip(){
         this.$store.commit('setviewTripId', this.tripID)
+        this.$store.commit('seteditTripId', this.tripID)
         router.push("/updatetrip")
       },
       async joinTrip(){
@@ -261,9 +306,15 @@ import router from '../router'
       }
     },
     watch: {
-    
+      getTripDetailsCount: function(){
+        console.log("loading count: "+ this.getTripDetailsCount)
+        if(this.getTripDetailsCount >= 3){
+          this.loadingOverlay = false
+        }
+      }
     },
     beforeMount() {
+      this.loadingOverlay = true
       this.getTripID()
       this.checkTripJoined()
       this.GetTripsDetails()

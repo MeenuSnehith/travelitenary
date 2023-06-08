@@ -81,7 +81,6 @@ import JoinTripsService from '@/services/JoinTripsService'
           }).then((response)=>{
             console.log(response.data[0])
             this.trips.push({
-              id: response.data[0].id != "" ? response.data[0].id: "",
               tripTitle: response.data[0].tripTitle != "" ? response.data[0].tripTitle: "",
               location: response.data[0].location != "" ? response.data[0].location: "",
               days: response.data[0].days != "" ? response.data[0].days: "",

@@ -14,7 +14,7 @@ const store = createStore({
       permission: "",
       isUserLoggedIn: false,
       viewTripId: "",
-      editTripId: "1"
+      editTripId: ""
     }
   },
   mutations: {

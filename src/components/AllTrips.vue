@@ -42,6 +42,17 @@
     </v-card>
     <br/>
   </div>
+    <v-overlay
+      :model-value="loadingOverlay"
+      class="align-center justify-center"
+      :persistent="diableOverlay"
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
   </div>
 </template>
 
@@ -52,13 +63,16 @@ import router from '../router'
   export default {
     data: () => ({
       trips: null,
-      refreshAllTrips: false
+      refreshAllTrips: false,
+      loadingOverlay: false,
+      diableOverlay:true,
     }),
 
     methods: {
       async GetAllTrips(){
         await TripsService.getAllTrips().then((response)=>{
           this.trips = response.data
+          this.loadingOverlay = false
         })
         console.log(this.trips)
       },
@@ -68,10 +82,12 @@ import router from '../router'
       }
     },
     beforeMount() {
+      this.loadingOverlay = true
       this.GetAllTrips()
     },
     watch: {
       refreshAllTrips: function(){
+        this.loadingOverlay = true
         this.trips = []
         console.log(this.refreshAllTrips)
         this.GetAllTrips()
