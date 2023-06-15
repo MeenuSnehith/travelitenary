@@ -1,1 +1,1 @@
-conflicts removed
+removing the conflicts
