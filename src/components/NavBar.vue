@@ -66,6 +66,7 @@
 <script>
 import { useStore } from 'vuex'
 
+
 export default {
   name: 'NavBar',
 
@@ -89,6 +90,7 @@ export default {
         this.$store.commit('setUserName', "")
         this.$store.commit('setPermission', "")
         this.$store.commit('setIsUserLoggedIn', false)
+
       }
   },
   beforeMount() {
